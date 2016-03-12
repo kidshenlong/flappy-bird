@@ -1,4 +1,4 @@
-package io.mpm.game.States;
+package io.mpm.game.states;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
