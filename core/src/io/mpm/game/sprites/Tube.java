@@ -18,8 +18,18 @@ public class Tube {
 
     private Texture topTube, bottomTube;
     private Vector2 posTopTube, posBotTube;
-    private Rectangle boundsTop, boundsBot;
+    private Rectangle boundsTop, boundsBot, counter;
     private Random rand;
+
+    public boolean isPassed() {
+        return passed;
+    }
+
+    public void setPassed(boolean passed) {
+        this.passed = passed;
+    }
+
+    private boolean passed = false;
 
     public Tube(float x) {
         topTube = new Texture("toptube.png");
@@ -31,6 +41,8 @@ public class Tube {
 
         boundsTop = new Rectangle(posTopTube.x, posTopTube.y, topTube.getWidth(), topTube.getHeight());
         boundsBot = new Rectangle(posBotTube.x, posBotTube.y, bottomTube.getWidth(), bottomTube.getHeight());
+
+        counter = new Rectangle(posTopTube.x + 50, 0, 2, 1000);
     }
 
     public Texture getTopTube() {
@@ -54,10 +66,16 @@ public class Tube {
         posBotTube.set(x, posTopTube.y - TUBE_GAP - bottomTube.getHeight());
         boundsTop.setPosition(posTopTube.x, posTopTube.y);
         boundsBot.setPosition(posBotTube.x, posBotTube.y);
+        counter.setPosition(posTopTube.x, 0);
+        passed = false;
     }
 
     public boolean collides(Rectangle player) {
         return player.overlaps(boundsTop) || player.overlaps(boundsBot);
+    }
+
+    public boolean collideWithCounter(Rectangle player){
+        return player.overlaps(counter);
     }
 
     public void dispose(){

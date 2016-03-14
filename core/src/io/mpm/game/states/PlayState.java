@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import io.mpm.game.FlappyBird;
@@ -22,8 +23,11 @@ public class PlayState extends State {
     private Texture bg;
     private Texture ground;
     private Vector2 groundPos1, groundPos2;
+    private ShapeRenderer shapeRenderer;
 
     private Array<Tube> tubes;
+
+    private int score;
 
     public PlayState(GameStateManager gsm) {
         super(gsm);
@@ -40,6 +44,8 @@ public class PlayState extends State {
         for (int i = 1; i <= TUBE_COUNT; i++){
             tubes.add(new Tube(i * (TUBE_SPACING + Tube.TUBE_WIDTH)));
         }
+
+        shapeRenderer = new ShapeRenderer();
     }
 
     @Override
@@ -62,6 +68,11 @@ public class PlayState extends State {
                 tube.reposition(tube.getPosTopTube().x + ((Tube.TUBE_WIDTH + TUBE_SPACING) * TUBE_COUNT));
             }
             if(tube.collides(bird.getBounds())) gsm.set(new PlayState(gsm)); //break; // Break statement fixes nested iterator issue.
+            if(tube.collideWithCounter(bird.getBounds()) && !tube.isPassed()) {
+                score++;
+                tube.setPassed(true);
+                System.out.println("New score: " + score);
+            }
         }
 
         if(bird.getPosition().y <= ground.getHeight() + GROUND_Y_OFFSET) gsm.set(new PlayState(gsm));
@@ -73,16 +84,26 @@ public class PlayState extends State {
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(cam.combined);
+        //shapeRenderer.setProjectionMatrix(cam.combined);
+
         sb.begin();
         sb.draw(bg, cam.position.x - (cam.viewportWidth / 2), 0);
         sb.draw(bird.getTexture(), bird.getPosition().x, bird.getPosition().y);
+        //shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
         for(Tube tube: tubes) {
             sb.draw(tube.getTopTube(), tube.getPosTopTube().x, tube.getPosTopTube().y);
             sb.draw(tube.getBottomTube(), tube.getPosBotTube().x, tube.getPosBotTube().y);
+
+            //shapeRenderer.setColor(1, 1, 0, 1);
+            //shapeRenderer.rect(1, 0, tube.getBottomTube().getWidth(), cam.viewportHeight);
         }
+        //shapeRenderer.end();
+
         sb.draw(ground, groundPos1.x, groundPos1.y);
         sb.draw(ground, groundPos2.x, groundPos2.y);
         sb.end();
+
 
     }
 
